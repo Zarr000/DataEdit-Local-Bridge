@@ -17,7 +17,7 @@ Create a GitHub repository named `dataedit` and upload the contents of this proj
 Replace `YOUR_GITHUB_USERNAME` with the repository owner's GitHub username:
 
 ```powershell
-npm install -g github:YOUR_GITHUB_USERNAME/dataedit
+npm install -g github:Zarr000/dataedit
 dataedit --help
 dataedit start
 ```
