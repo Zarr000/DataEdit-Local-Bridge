@@ -1,6 +1,12 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import http from "node:http";
 import crypto from "node:crypto";
 import { forwardToRoblox } from "./opencloud-proxy.js";
+
+const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const VERSION = JSON.parse(readFileSync(resolve(PACKAGE_ROOT, "package.json"), "utf8")).version;
 
 const HOST = "127.0.0.1";
 const MAX_REQUEST_BYTES = 1024 * 1024;
@@ -45,13 +51,21 @@ function tokenMatches(header, token) {
 }
 
 export async function startBridge({ apiKey, port = 43172 }) {
+  if (typeof apiKey !== "string") {
+    throw new Error("The API key was not received as text. Restart Data Edit and enter the key again.");
+  }
+  apiKey = apiKey.trim();
+  if (apiKey.length < 20 || apiKey.length > 4096 || /\s/.test(apiKey)) {
+    throw new Error("The API key input is malformed. Paste only the complete Roblox Open Cloud key, without spaces or extra text.");
+  }
+
   const pairingToken = crypto.randomBytes(32).toString("hex");
 
   const server = http.createServer(async (req, res) => {
     const url = new URL(req.url || "/", `http://${HOST}:${port}`);
 
     if (req.method === "GET" && url.pathname === "/health") {
-      return json(res, 200, { ok: true, service: "Data Edit", version: "0.2.1" });
+      return json(res, 200, { ok: true, service: "Data Edit", version: VERSION });
     }
 
     if (req.method !== "POST" || url.pathname !== "/v1/opencloud") {

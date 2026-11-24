@@ -1,15 +1,30 @@
 {
   "name": "dataedit-local-bridge",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Local Open Cloud connector for the Data Edit Roblox Studio plugin",
   "type": "module",
-  "engines": { "node": ">=20" },
-  "bin": { "dataedit": "./bin/cli.js" },
-  "files": ["bin/cli.js", "src/**/*.js", "README.md", "LICENSE"],
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "dataedit": "./bin/cli.js"
+  },
+  "files": [
+    "bin/cli.js",
+    "src/**/*.js",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node ./bin/cli.js start",
-    "check": "node --check ./bin/cli.js && node --check ./src/server.js && node --check ./src/opencloud-proxy.js"
+    "check": "node --check ./bin/cli.js && node --check ./src/server.js && node --check ./src/opencloud-proxy.js && node --check ./src/update.js && node --test ./test/*.test.js"
   },
   "license": "MIT",
-  "keywords": ["roblox", "datastore", "open-cloud", "roblox-studio", "data-edit"]
+  "keywords": [
+    "roblox",
+    "datastore",
+    "open-cloud",
+    "roblox-studio",
+    "data-edit"
+  ]
 }

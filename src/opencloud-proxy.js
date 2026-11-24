@@ -45,8 +45,17 @@ function validateQuery(method, path, query) {
 }
 
 export async function forwardToRoblox({ apiKey, universeId, method, path, query, body, timeoutMs = 25000 }) {
-  if (typeof apiKey !== "string" || apiKey.length < 20 || apiKey.length > 512 || /\s/.test(apiKey)) {
-    throw new Error("The Open Cloud API key is missing or invalid.");
+  if (typeof apiKey !== "string") {
+    throw new Error("Local Bridge did not receive the API key from its startup prompt. Stop the bridge and start it again.");
+  }
+  if (apiKey.length < 20) {
+    throw new Error("The Open Cloud API key received by Local Bridge is empty or too short. Stop the bridge and paste the complete key again.");
+  }
+  if (apiKey.length > 4096) {
+    throw new Error("The Open Cloud API key input is unexpectedly long (over 4096 characters). Check for accidental pasted text.");
+  }
+  if (/\s/.test(apiKey)) {
+    throw new Error("The Open Cloud API key contains whitespace. Stop the bridge and paste only the key value, without spaces or line breaks.");
   }
   const universe = String(universeId ?? "");
   if (!/^\d{1,24}$/.test(universe) || /^0+$/.test(universe)) {
