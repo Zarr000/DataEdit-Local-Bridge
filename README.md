@@ -1,6 +1,10 @@
-# Data Edit — Local Connector
+# Data Edit — Local Bridge
 
 Local Node.js connector for the **Data Edit** Roblox Studio plugin. It runs on the user's own computer and forwards only the supported DataStore Open Cloud requests to Roblox.
+
+**Repository:** https://github.com/Zarr000/DataEdit-Local-Bridge
+
+---
 
 ## Requirements
 
@@ -8,101 +12,254 @@ Local Node.js connector for the **Data Edit** Roblox Studio plugin. It runs on t
 - Windows, macOS, or Linux.
 - A Roblox Open Cloud API Key scoped to the intended experience and required DataStore permissions.
 
-Create and manage the API Key in Roblox Creator Dashboard → Credentials → API Keys. Keep the key private.
+Create and manage the API Key in Roblox Creator Dashboard → Credentials → API Keys.
 
-## Install from GitHub
+**Keep your API Key private.**
 
-Create a GitHub repository named `dataedit` and upload the contents of this project to its repository root (so `package.json`, `bin/`, and `src/` are at the root).
+---
 
-Replace `YOUR_GITHUB_USERNAME` with the repository owner's GitHub username:
+## Installation
+
+### Method 1 — Install directly from GitHub (Recommended)
+
+Run these commands in PowerShell or Terminal:
 
 ```powershell
 npm install -g github:Zarr000/DataEdit-Local-Bridge
+```
+
+Verify installation:
+
+```powershell
 dataedit --help
+```
+
+Start the bridge:
+
+```powershell
 dataedit start
 ```
 
-## Install from a downloaded ZIP
+### Method 2 — Install from downloaded ZIP
 
-1. Download and extract this repository ZIP.
-2. Open PowerShell or Terminal in the extracted folder containing `package.json`.
-3. Run:
+1. Open the repository:
+
+   https://github.com/Zarr000/DataEdit-Local-Bridge
+
+2. Click **Code → Download ZIP**.
+3. Extract the downloaded ZIP.
+4. Open PowerShell or Terminal inside the extracted folder containing `package.json`.
+5. Run:
 
 ```powershell
 npm install -g .
+```
+
+6. Start Data Edit Local Bridge:
+
+```powershell
 dataedit start
 ```
 
-## Pair with the Data Edit plugin
+---
+
+## Connecting to Roblox Studio
+
+After starting the bridge:
 
 1. Run `dataedit start` in an interactive terminal.
-2. Enter the Roblox Open Cloud API Key when prompted. Input is hidden while typing.
-3. The connector listens only on `127.0.0.1` and prints a temporary pairing token.
-4. In Data Edit → Settings → Local, enter the Universe ID, DataStore scope, Bridge URL, and pairing token.
-5. Keep the terminal open while using Local Mode.
+2. Enter your Roblox Open Cloud API Key when prompted. Input is hidden while typing.
+3. The connector starts listening on `127.0.0.1`.
+4. A temporary pairing token will be displayed in your terminal.
+5. Open Roblox Studio.
+6. Open the **Data Edit** plugin.
+7. Navigate to **Settings → Local Connection**.
+8. Enter your Universe ID.
+9. Enter your DataStore scope.
+10. Enter the Bridge URL and pairing token.
+11. Connect.
 
-Default URL:
+### Default Bridge URL
 
 ```text
 http://127.0.0.1:43172/v1/opencloud
 ```
 
-The token changes every time the connector starts. Paste the latest token into the plugin.
+The pairing token changes every time the connector starts.
 
-## Commands
+Always use the latest token displayed in your terminal.
+
+**Keep the bridge process running while using Local Mode.**
+
+---
+
+## Available Commands
+
+Start the bridge:
 
 ```powershell
 dataedit start
- dataedit start --port 43173
+```
+
+Start on a custom port:
+
+```powershell
+dataedit start --port 43173
+```
+
+Display help:
+
+```powershell
 dataedit --help
+```
+
+Display version:
+
+```powershell
 dataedit --version
 ```
 
-To stop the connector, press `Ctrl+C` in its terminal.
+Stop the bridge:
+
+Press `Ctrl+C` in the terminal.
+
+---
 
 ## Security
 
-- The service binds to `127.0.0.1` only. Do not expose it on `0.0.0.0` or forward its port to the internet.
-- The Roblox API Key is entered in the local terminal and held in process memory only.
+Data Edit Local Bridge is designed to keep Roblox Open Cloud credentials on the user's own computer.
+
+Security characteristics:
+
+- The service binds to `127.0.0.1` only.
+- The service must not be exposed on `0.0.0.0`.
+- Do not forward the bridge port to the public internet.
+- The Roblox API Key is entered in the local terminal.
+- API Key input is hidden while typing.
+- The API Key is held in process memory only.
 - The plugin receives a temporary pairing token, not the Roblox API Key.
 - The pairing token is required for connector requests and changes on every restart.
-- Do not share API Keys or pairing tokens, and do not commit credentials or logs containing secrets.
-- Local Mode avoids sending the API Key through a hosted third-party backend; it does not protect against other software already running with access to the same computer or process.
-- Test write and delete operations using a separate test experience first.
+- Do not share API Keys or pairing tokens.
+- Never commit credentials or logs containing secrets.
+- Local Mode avoids sending the API Key through the Exp Works hosted backend.
+
+Local Mode does not protect credentials against other software that already has access to the same computer or process.
+
+**Always test write and delete operations using a separate test experience first.**
+
+---
 
 ## Troubleshooting
 
-### `EADDRINUSE`
+### EADDRINUSE
 
-The default port is already in use. Run `dataedit start --port 43173` and update the Bridge URL in the plugin to the URL printed by the connector.
+The default port is already being used by another application.
+
+Try a different port:
+
+```powershell
+dataedit start --port 43173
+```
+
+Update the Bridge URL in the plugin to the URL printed by the connector.
 
 ### Plugin cannot connect
 
-Check that the connector terminal is still running, the URL uses `127.0.0.1`, the port matches, and the latest pairing token was pasted.
+Check the following:
 
-### Roblox returns 401 or 403
+- The bridge terminal is still running.
+- The URL uses `127.0.0.1`.
+- The port matches the running bridge.
+- You entered the latest pairing token.
+- Roblox Studio has permission to make HTTP requests to localhost.
 
-Check that the API Key is active, scoped to the correct experience, and has the necessary DataStore permissions. Verify the Universe ID too.
+### Roblox returns 401 Unauthorized
 
-### Node is not found
+Possible causes:
 
-Install Node.js 20 or newer, restart the terminal, then run `node --version`.
+- The API Key is invalid.
+- The API Key has expired.
+- The API Key was revoked.
 
-## Development checks
+Check your credentials in Roblox Creator Dashboard.
 
-There are no third-party npm runtime dependencies. Run:
+### Roblox returns 403 Forbidden
+
+Possible causes:
+
+- The API Key does not have the required permissions.
+- The API Key is not scoped to the correct experience.
+- The requested DataStore operation is not permitted.
+
+Review your Open Cloud API Key permissions.
+
+### Universe ID error
+
+Make sure the Universe ID belongs to the experience whose DataStore you want to access.
+
+### Node is not recognized
+
+Install Node.js 20 or newer.
+
+After installation, restart PowerShell or Terminal and check:
+
+```powershell
+node --version
+npm --version
+```
+
+---
+
+## Development
+
+There are no third-party npm runtime dependencies.
+
+Check JavaScript syntax:
 
 ```powershell
 npm run check
 ```
 
-## npm publication note
-
-The executable command is **`dataedit`**. The npm package metadata currently uses **`dataedit-local-bridge`** because npm package names are globally unique and availability of the shorter `dataedit` name has not been confirmed. If this package is later published under its current metadata name, install it with:
+Start directly from the source:
 
 ```powershell
-npm install -g dataedit-local-bridge
-dataedit start
+npm start
 ```
 
-This package has not been published to npm. The GitHub installation command above is the intended installation path for now.
+---
+
+## npm Registry
+
+The executable command is:
+
+```powershell
+dataedit
+```
+
+The package metadata name is currently:
+
+```text
+dataedit-local-bridge
+```
+
+The package has not been published to the npm registry.
+
+Until publication, install directly from GitHub:
+
+```powershell
+npm install -g github:Zarr000/DataEdit-Local-Bridge
+```
+
+---
+
+## License
+
+MIT License.
+
+See the `LICENSE` file for details.
+
+---
+
+**Data Edit**
+
+Developed by **Exp Works**.
